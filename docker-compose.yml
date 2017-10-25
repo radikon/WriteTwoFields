@@ -1,0 +1,34 @@
+version: '2'
+
+volumes:
+    database_data:
+        driver: local
+
+services:
+  apache:
+      image: apache:latest
+      ports:
+          - 8080:80
+      volumes:
+          - ./docker/apache/default.conf:/etc/apache/conf.d/default.conf
+      volumes_from:
+          - php
+
+  php:
+      build: ./docker/php/
+      expose:
+          - 9000
+      volumes:
+          - .:/var/www/html
+
+  mysql:
+      image: mysql:latest
+      expose:
+          - 3306
+      volumes:
+          - database_data:/var/lib/mysql
+      environment:
+          MYSQL_ROOT_PASSWORD: mysqlrootpass
+          MYSQL_DATABASE: phptesting
+          MYSQL_USER: root
+          MYSQL_PASSWORD: mysqlpass
